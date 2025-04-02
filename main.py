@@ -11,6 +11,7 @@ from routes.offer_routes import router as offer_router
 from routes.contact_routes import router as contact_router
 from routes.rating_routes import router as rating_router
 from routes.restaurant_routes import router as restaurant_router
+from routes.cont_routes import router as cont_router
 #import cors middleware
 from fastapi.middleware.cors import CORSMiddleware
 
@@ -37,6 +38,6 @@ app.include_router(offer_router)
 app.include_router(contact_router)
 app.include_router(rating_router)
 app.include_router(restaurant_router)
-
+app.include_router(cont_router)
 
 #routes

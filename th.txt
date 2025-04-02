@@ -1,0 +1,124 @@
+async def create_Offer_withFile(
+    OfferName: str = Form(...),
+    Description: str = Form(...),
+    Discount: float = Form(...),
+    StartDate: str = Form(...),
+    EndDate: str = Form(...),
+    location_id: str = Form(...),
+    restaurant_id: str = Form(...),
+    FoodType: str = Form(...),
+    image: UploadFile = File(...)
+):
+    try:
+        # Save the uploaded image
+        file_ext = image.filename.split(".")[-1]
+        file_path = os.path.join(UPLOAD_DIR, f"{ObjectId()}.{file_ext}")
+
+        with open(file_path, "wb") as buffer:
+            shutil.copyfileobj(image.file, buffer)
+
+        image_url = await upload_image(file_path)  # Assuming upload_image is defined
+
+        # Convert MM/DD/YYYY format to datetime
+        try:
+            parsed_start_date = datetime.strptime(StartDate, "%m/%d/%Y")
+            parsed_end_date = datetime.strptime(EndDate, "%m/%d/%Y")
+        except ValueError:
+            raise HTTPException(status_code=400, detail="Invalid date format. Use MM/DD/YYYY.")
+
+        # Store in the database
+        offer_data = {
+            "OfferName": OfferName,
+            "Description": Description,
+            "Discount": Discount,
+            "StartDate": parsed_start_date,  # Now properly formatted
+            "EndDate": parsed_end_date,
+            "location_id": ObjectId(location_id),
+            "restaurant_id": ObjectId(restaurant_id),
+            "FoodType": FoodType,
+            "image_url": image_url
+        }
+        print(offer_data)
+        await offer_collection.insert_one(offer_data)
+        return JSONResponse(content={"message": "Offer created successfully"}, status_code=201)
+
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=f"Error occurred: {str(e)}")
+
+
+
+from datetime import datetime
+from typing import Optional, Dict, Any
+from pydantic import BaseModel, Field, validator
+from bson import ObjectId
+
+class Offer(BaseModel): 
+    OfferName: Optional[str]
+    Description: Optional[str]
+    Discount: Optional[float]
+    StartDate: Optional[datetime]  # Use datetime for proper parsing
+    EndDate: Optional[datetime]
+    location_id: Optional[str]
+    restaurant_id: Optional[str]
+    image_url: Optional[str] = None
+    FoodType: Optional[str]
+
+class OfferOut(BaseModel):
+    id: str = Field(alias="_id")
+    OfferName: Optional[str]
+    Description: Optional[str]
+    Discount: Optional[float]
+    StartDate: Optional[datetime]
+    EndDate: Optional[datetime]
+    location_id: Optional[str]
+    restaurant_id: Optional[str] 
+    image_url: Optional[str] = None
+    FoodType: Optional[str]
+    restaurant: Optional[Dict[str, Any]] = None
+    location: Optional[Dict[str, Any]] = None
+
+    @validator("id", "location_id", "restaurant_id", pre=True, always=True)
+    def convert_objectid_to_str(cls, v):
+        return str(v) if isinstance(v, ObjectId) else v
+
+    @validator("location", "restaurant", pre=True, always=True)
+    def convert_nested_objectid(cls, v):
+        if isinstance(v, dict) and "_id" in v:
+            v["_id"] = str(v["_id"])
+        return v
+    
+    @validator("StartDate", "EndDate", pre=True, always=True)
+    def convert_datetime_to_str(cls, v):
+        return v.strftime("%m/%d/%Y") if isinstance(v, datetime) else v
+
+
+
+from datetime import datetime
+from fastapi import APIRouter, Form, File, UploadFile
+
+router = APIRouter()
+
+@router.post("/create_offer_withFile/")
+async def create_offer_with_file_api(
+    OfferName: str = Form(...),
+    Description: str = Form(...),
+    Discount: float = Form(...),
+    StartDate: str = Form(...),
+    EndDate: str = Form(...),
+    location_id: str = Form(...),
+    restaurant_id: str = Form(...), 
+    FoodType: str = Form(...),
+    image: UploadFile = File(...)
+):
+    try:
+        # Convert MM/DD/YYYY format to datetime
+        parsed_start_date = datetime.strptime(StartDate, "%m/%d/%Y")
+        parsed_end_date = datetime.strptime(EndDate, "%m/%d/%Y")
+
+        return await create_Offer_withFile(
+            OfferName, Description, Discount, parsed_start_date, parsed_end_date, 
+            location_id, restaurant_id, FoodType, image
+        )
+    
+    except ValueError:
+        return {"error": "Invalid date format. Please use MM/DD/YYYY."}

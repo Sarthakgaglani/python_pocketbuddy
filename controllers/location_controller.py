@@ -12,13 +12,24 @@ async def addLocation(location: Location):
 
     return JSONResponse(content={"message": "Location added successfully"}, status_code=201)
 
-async def getLocations():
+async def getAllLocations():
     Locations = await locations_collection.find().to_list(length=100)
     
     for loc in Locations:
         loc["id"] = str(loc["_id"])
+        loc.setdefault("open_timing", None)
+        loc.setdefault("close_timing", None)
     
     return [LocationOut(**loc) for loc in Locations]
+
+
+
+async def getLocationById(location_id:str):
+    result = await locations_collection.find_one({"_id":ObjectId(location_id)})
+    print(result)    
+    return LocationOut(**result)
+
+
 
 async def deleteLocation(locationId: str):
     result = await locations_collection.delete_one({"_id": ObjectId(locationId)})

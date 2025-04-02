@@ -4,11 +4,10 @@ from bson import ObjectId
 
 class Location(BaseModel):
     Location:str
-    title:str
-    category:str
     description:str
-    timing:str
-    is_active:bool
+    open_timing:Optional[str]= None
+    close_timing:Optional[str]=None
+    
 
 class LocationOut(Location):
     id:str = Field(alias="_id")
@@ -21,10 +20,6 @@ class LocationOut(Location):
             return v
         raise ValueError("Invalid ObjectId format")
     
-    @validator("is_active",pre=True,always=True)
-    def convert_is_active(cls,v):
-        if v == 1:
-            return True
-        return False
+    
     
 

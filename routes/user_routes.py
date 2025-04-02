@@ -1,6 +1,6 @@
 from fastapi import APIRouter
-from controllers.user_controller import addUser,getAllUsers,loginUser,deleteUser
-from models.user_model import User,UserOut,UserLogin
+from controllers.user_controller import addUser,getAllUsers,loginUser,deleteUser,forgotPassword,resetPassword
+from models.user_model import User,UserOut,UserLogin,ResetPasswordReq
 
 router = APIRouter()
 
@@ -19,3 +19,11 @@ async def login_user(user:UserLogin):
 @router.delete("/user/{userId}")
 async def delete_user(userId:str):
     return await deleteUser(userId)
+
+@router.post("/forgot-password/")
+async def forgot_password(email:str):
+    return await forgotPassword(email)
+
+@router.post("/reset-password/")
+async def reset_password(data:ResetPasswordReq):
+    return await resetPassword(data)
