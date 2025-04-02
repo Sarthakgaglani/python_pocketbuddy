@@ -98,7 +98,7 @@ async def resetPassword(data:ResetPasswordReq):
         if not email:
             raise HTTPException(status_code=421,detail="Invalid token...")
         
-        hashed_password = bcrypt.hashpw(data.password.encode("utf-8"),bcrypt.gensalt())
+        hashed_password = bcrypt.hashpw(data.password.encode("utf-8"),bcrypt.gensalt()).decode("utf-8")
         await user_collection.update_one({"email":email},{"$set":{"password":hashed_password}})
 
         return {"message":"Password reset successfully"}

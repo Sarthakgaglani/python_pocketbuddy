@@ -9,6 +9,11 @@ from datetime import datetime
 from utils.cloudinary_util import upload_image
 from typing import Optional
 from uuid import uuid4
+from apscheduler.schedulers.background import BackgroundScheduler
+from fastapi import FastAPI
+import asyncio
+
+app = FastAPI()
 
 UPLOAD_DIR = "uploads/"
 os.makedirs(UPLOAD_DIR, exist_ok=True)
@@ -76,7 +81,10 @@ async def create_Offer_withFile(
 
 async def get_offers():
     try:
-        offers = await offer_collection.find().to_list(None)  
+
+        offers = await offer_collection.find().to_list(None)
+        # now = datetime.now()
+        # offers = await offer_collection.find({"EndDate":{"gte":now}}).to_list(None)  
         
         def convert_objectid_to_str(data):
             if isinstance(data,ObjectId):
@@ -120,6 +128,7 @@ async def get_offerBy_Id(offerId:str):
         offers = await offer_collection.find_one({"_id": ObjectId(offerId)})
         if not offers:
             raise HTTPException(status_code=404, detail="Offer not found")
+        
         
         offers["_id"] = str(offers["_id"])
 
@@ -190,6 +199,24 @@ async def update_offer(
     except Exception as e:
         print(f"An error occured:{str(e)}")
         raise HTTPException(status_code=500, detail=f"Error occurred: {str(e)}")
+    
+loop = asyncio.get_event_loop()
+
+async def remove_expired_offers():
+    now = datetime.now()
+    result = await offer_collection.delete_many({"EndDate": {"$lt": now}})
+    print(f"[{now}] - Deleted {result.deleted_count} expired offers.")
+
+def run_async_task():
+    future = asyncio.run_coroutine_threadsafe(remove_expired_offers(), loop)
+    future.result()  # Wait for task completion
+
+# Start APScheduler with FastAPI's event loop
+scheduler = BackgroundScheduler()
+scheduler.add_job(run_async_task, 'interval', minutes=1)
+scheduler.start()
+    
+
 
 # async def update_offer(offerID: str, offer_data: Offer):
 #     """Update an existing offer with JSON input"""
