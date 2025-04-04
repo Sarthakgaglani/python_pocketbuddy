@@ -22,45 +22,7 @@ async def getAllRestaurant():
     return [RestaurantOut(**restaurant) for restaurant in restaurants]
 
  
-# async def getRestaurantById(restaurant_id:str):
-#     result = await restaurant_collection.find_one({"_id":ObjectId(restaurant_id)})
-#     print(result)    
-#     return RestaurantOut(**result)
 
-# async def getRestaurantById(restaurant_id:str):
-#     restaurants = await restaurant_collection.find().to_list()
-
-#     for restaurant in restaurants:
-#         restaurant["_id"] = str(restaurant["_id"])
-
-#         if "area_id" in restaurant:
-#             try:
-#                 area = await area_collection.find_one({"_id": ObjectId(restaurant["area_id"])})
-#                 if area:
-#                     area["_id"] = str(area["_id"])
-#                     restaurant["area"] = area
-#             except:
-#                 restaurant["area"] = None  # Handle invalid ObjectId
-        
-#         if "city_id" in restaurant:
-#             try:
-#                 city = await city_collection.find_one({"_id": ObjectId(restaurant["city_id"])})
-#                 if city:
-#                     city["_id"] = str(city["_id"])
-#                     restaurant["city"] = city
-#             except:
-#                 restaurant["city"] = None  # Handle invalid ObjectId
-
-#         if "state_id" in restaurant:
-#             try:
-#                 state = await state_collection.find_one({"_id": ObjectId(restaurant["state_id"])})
-#                 if state:
-#                     state["_id"] = str(state["_id"])
-#                     restaurant["state"] = state
-#             except:
-#                 restaurant["state"] = None  # Handle invalid ObjectId
-
-#     return [RestaurantOut(**restaurant) for restaurant in restaurants]
 
 async def getRestaurantById(restaurant_id: str):
     try:

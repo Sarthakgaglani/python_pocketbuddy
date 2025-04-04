@@ -8,26 +8,7 @@ async def addContact(contact:Contact):
     savedContact= await contact_collection.insert_one(contact.dict())
     return JSONResponse(content={"message":"Contact Added Successfully"},status_code=201)
 
-# async def getContact():
-#     contacts = await contact_collection.find().to_list()
 
-#     for contact in contacts:
-#         if "city_id" in contact and isinstance(contact["city_id"],ObjectId):
-#             contact["city_id"] = str(contact["city_id"])
-
-#             city = await city_collection.find_one({"_id":ObjectId(contact["city_id"])})
-#             if city:
-#                 city["_id"] = str(city["_id"])
-#                 contact["city"] = city
-                
-#         if "area_id" in contact and isinstance(contact["area_id"],ObjectId):
-#             contact["area_id"] = str(contact["area_id"])
-
-#             area =await area_collection.find_one({"_id"})
-#             if area:
-#                 area["_id"]= str(area["_id"])
-#                 contact["area"] = area
-#     return [ContactOut(**contact) for contact in contacts]
 
 async def getContact():
     contacts = await contact_collection.find().to_list(length=1000)  # ✅ Added length

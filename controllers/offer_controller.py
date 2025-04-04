@@ -218,39 +218,3 @@ scheduler.start()
     
 
 
-# async def update_offer(offerID: str, offer_data: Offer):
-#     """Update an existing offer with JSON input"""
-    
-#     # Check if offer exists
-#     existing_offer = await offer_collection.find_one({"_id": ObjectId(offerID)})
-#     if not existing_offer:
-#         raise HTTPException(status_code=404, detail="Offer not found")
-
-#     # Convert input to dictionary and remove None values
-#     update_data = {k: v for k, v in offer_data.dict().items() if v is not None}
-
-#     # Convert ObjectId fields
-#     if "location_id" in update_data:
-#         update_data["location_id"] = ObjectId(update_data["location_id"])
-#     if "restaurant_id" in update_data:
-#         update_data["restaurant_id"] = ObjectId(update_data["restaurant_id"])
-
-#     # Convert date strings to datetime objects
-#     if "StartDate" in update_data and isinstance(update_data["StartDate"], str):
-#         update_data["StartDate"] = datetime.fromisoformat(update_data["StartDate"])
-#     if "EndDate" in update_data and isinstance(update_data["EndDate"], str):
-#         update_data["EndDate"] = datetime.fromisoformat(update_data["EndDate"])
-
-#     # Update the offer in the database
-#     await offer_collection.update_one({"_id": ObjectId(offerID)}, {"$set": update_data})
-
-#     # Fetch and return the updated offer
-#     updated_offer = await offer_collection.find_one({"_id": ObjectId(offerID)})
-#     if updated_offer:
-#         updated_offer["_id"] = str(updated_offer["_id"])
-#         updated_offer["restaurant_id"] = str(updated_offer["restaurant_id"])
-#         updated_offer["location_id"] = str(updated_offer["location_id"])
-
-#         return {"message": "Offer updated successfully", "updated_offer": updated_offer}
-
-#     raise HTTPException(status_code=500, detail="Error updating offer")
