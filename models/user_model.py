@@ -9,8 +9,7 @@ class User(BaseModel):
     firstName:str
     lastName:str
     age:int
-    # status:bool
-    # role_id:str
+   
     role:str
     email:str
     password:str

@@ -14,6 +14,8 @@ class Offer(BaseModel):
     image_url: Optional[str] = None
     FoodType: Optional[str]
 
+    
+
 class OfferOut(BaseModel):
     id: str = Field(alias="_id")
     OfferName: Optional[str]
@@ -27,6 +29,10 @@ class OfferOut(BaseModel):
     FoodType: Optional[str]
     restaurant: Optional[Dict[str, Any]] = None
     location: Optional[Dict[str, Any]] = None
+
+    
+
+    
 
     @validator("id", "location_id", "restaurant_id", pre=True, always=True)
     def convert_objectid_to_str(cls, v):

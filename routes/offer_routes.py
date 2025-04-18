@@ -2,6 +2,7 @@ from fastapi import APIRouter, UploadFile, File, Form,HTTPException
 from controllers.offer_controller import create_offer, create_Offer_withFile, get_offers, delete_offer,get_offerBy_Id,update_offer
 from models.offer_model import Offer
 from datetime import datetime
+from typing import Optional
 
 from config.database import offer_collection
 
@@ -21,7 +22,9 @@ async def create_offer_with_file(
     location_id: str = Form(...),
     restaurant_id: str = Form(...), 
     FoodType: str = Form(...),
-    image: UploadFile = File(...)
+    image: UploadFile = File(...),
+
+    
 ):
     
     # try:
@@ -38,6 +41,25 @@ async def create_offer_with_file(
     #     return {"error": "Invalid date format. Please use MM/DD/YYYY."}
     
     # return await create_Offer_withFile(OfferName, Description, Discount, StartDate, EndDate, location_id, restaurant_id, FoodType, image)
+
+
+# @router.post("/create_User_with_File/")
+# async def create_offer_with_file(
+#     OfferName: str = Form(...),
+#     Description: str = Form(...),
+#     Discount: float = Form(...),
+#     StartDate: datetime = Form(...),
+#     EndDate: datetime = Form(...),
+#     location_id: str = Form(...),
+#     restaurant_id: str = Form(...), 
+#     FoodType: str = Form(...),
+#     image: UploadFile = File(...)
+# ):
+#      return await create_UserOffer_withFile(
+#             OfferName, Description, Discount, StartDate, EndDate, 
+#             location_id, restaurant_id, FoodType, image
+#         )
+
 
 @router.get("/getoffers/")
 async def getoffers():
@@ -62,6 +84,8 @@ async def update_existing_offer(offerID: str, OfferName: str = Form(...),
     location_id: str = Form(...),
     restaurant_id: str = Form(...), 
     FoodType: str = Form(...),
-    image: UploadFile = File(...)):
+    image: UploadFile = File(...),
+   
+    ):
     return await update_offer(offerID, OfferName, Description, Discount, StartDate, EndDate, 
-            location_id, restaurant_id, FoodType, image)
+            location_id, restaurant_id, FoodType, image )

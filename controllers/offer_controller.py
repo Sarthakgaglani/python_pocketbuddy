@@ -41,7 +41,9 @@ async def create_Offer_withFile(
     location_id: str = Form(...),
     restaurant_id: str = Form(...),
     FoodType: str = Form(...),
-    image: UploadFile = File(...)
+    image: UploadFile = File(...),
+
+   
 ):
     try:
         file_ext = image.filename.split(".")[-1]
@@ -64,7 +66,9 @@ async def create_Offer_withFile(
             "location_id": ObjectId(location_id),
             "restaurant_id": ObjectId(restaurant_id),
             "FoodType": FoodType,
-            "image_url": image_url
+            "image_url": image_url,
+
+            
         }
         print(offer_data)
         insertedOffer = await offer_collection.insert_one(offer_data)
@@ -75,7 +79,47 @@ async def create_Offer_withFile(
         raise HTTPException(status_code=500, detail=f"Error occurred: {str(e)}")
 
 
+# async def create_UserOffer_withFile(
+#     OfferName: str = Form(...),
+#     Description: str = Form(...),
+#     Discount: float = Form(...),
+#     StartDate: datetime = Form(...),
+#     EndDate: datetime = Form(...),
+#     location_id: str = Form(...),
+#     restaurant_id: str = Form(...),
+#     FoodType: str = Form(...),
+#     image: UploadFile = File(...)
+# ):
+#     try:
+#         file_ext = image.filename.split(".")[-1]
+#         file_path = os.path.join(UPLOAD_DIR, f"{ObjectId()}.{file_ext}")
 
+#         with open(file_path, "wb") as buffer:
+#             shutil.copyfileobj(image.file, buffer)
+
+#         image_url = await upload_image(file_path)
+
+        
+
+
+#         offer_data = {
+#             "OfferName": OfferName,
+#             "Description": Description,
+#             "Discount": Discount,
+#             "StartDate": StartDate,
+#             "EndDate": EndDate,
+#             "location_id": location_id,
+#             "restaurant_id": restaurant_id,
+#             "FoodType": FoodType,
+#             "image_url": image_url
+#         }
+#         print(offer_data)
+#         insertedOffer = await offer_collection.insert_one(offer_data)
+#         return JSONResponse(content={"message": "Offer created successfully"}, status_code=201)
+
+#     except Exception as e:
+#         print(f"An error occured:{str(e)}")
+#         raise HTTPException(status_code=500, detail=f"Error occurred: {str(e)}")
 
 
 
@@ -164,7 +208,11 @@ async def update_offer(
     location_id: str = Form(...),
     restaurant_id: str = Form(...),
     FoodType: str = Form(...),
-    image: UploadFile = File(...)
+    image: UploadFile = File(...),
+
+    
+
+
     ):
     existing_offer = offer_collection.find_one({"_id": ObjectId(offerID)})
     if not existing_offer:
@@ -190,7 +238,9 @@ async def update_offer(
             "location_id": ObjectId(location_id),
             "restaurant_id": ObjectId(restaurant_id),
             "FoodType": FoodType,
-            "image_url": image_url
+            "image_url": image_url,
+
+            
         }
         print(offer_data)
         insertedOffer = await offer_collection.update_one({"_id": ObjectId(offerID)}, {"$set": offer_data})
